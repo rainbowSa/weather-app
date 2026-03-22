@@ -46,6 +46,53 @@ cd c:\Users\User\weather-app
 javac -d bin src/Main.java src/com/weatherapp/**/*.java
 ```
 
+## 🧪 Test Unitari
+
+Il progetto include una suite completa di test unitari che coprono:
+
+- ✅ **Formattazione richieste API** - Verifica che gli URL siano costruiti correttamente
+- ✅ **Gestione input utente** - Test per input mancanti, null, o errati
+- ✅ **Casi limite** - Problemi di rete, città inesistenti, dati malformati
+
+### Dipendenze per i Test
+I test utilizzano **JUnit 5** (Jupiter). Le dipendenze sono già incluse in `lib/`:
+- `junit-jupiter-api-5.10.1.jar`
+- `junit-jupiter-engine-5.10.1.jar`
+- `junit-platform-launcher-1.10.1.jar`
+- `opentest4j-1.3.0.jar`
+- `apiguardian-api-1.1.2.jar`
+
+### Eseguire i Test
+
+#### Opzione 1: Script Automatico (Raccomandato)
+```bash
+# Windows
+run-tests.bat
+```
+
+#### Opzione 2: Manualmente
+```bash
+# Compila progetto e test
+javac -d bin -cp "lib/*" src/Main.java src/com/weatherapp/**/*.java
+javac -d bin -cp "bin;lib/*" test/TestRunner.java test/com/weatherapp/**/*.java
+
+# Esegui i test
+java -cp "bin;lib/*" com.weatherapp.TestRunner
+```
+
+### Struttura dei Test
+```
+test/
+├── TestRunner.java                        # Launcher principale dei test
+└── com/weatherapp/
+    ├── client/
+    │   └── WeatherApiClientTest.java      # Test client API
+    ├── service/
+    │   └── WeatherServiceTest.java        # Test logica di business
+    └── ui/
+        └── ConsoleUITest.java             # Test interfaccia utente
+```
+
 ## ▶️ Come Eseguire
 
 ### Da VS Code:

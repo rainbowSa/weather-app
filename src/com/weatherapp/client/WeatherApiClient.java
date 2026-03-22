@@ -22,6 +22,10 @@ public class WeatherApiClient {
      * @return Oggetto Location con coordinate e info della città
      */
     public Location getLocationByCityName(String cityName) {
+        if (cityName == null || cityName.trim().isEmpty()) {
+            return null;
+        }
+        
         try {
             String encodedCity = URLEncoder.encode(cityName, "UTF-8");
             String urlString = ApiConfig.GEOCODING_API_URL + "?name=" + encodedCity + "&count=1&language=it";
@@ -94,6 +98,11 @@ public class WeatherApiClient {
             // Parsing basico (in produzione usare Gson/Jackson)
             double latitude = extractDouble(json, "\"latitude\":");
             double longitude = extractDouble(json, "\"longitude\":");
+            
+            // Se le coordinate sono 0,0, probabilmente nessun risultato valido
+            if (latitude == 0.0 && longitude == 0.0) {
+                return null;
+            }
             
             String country = extractString(json, "\"country\":");
             if (country.isEmpty()) {
