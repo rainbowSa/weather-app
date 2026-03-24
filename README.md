@@ -95,14 +95,28 @@ test/
 
 ## ▶️ Come Eseguire
 
-### Da VS Code:
+### Modalità Console (esistente)
+Da VS Code:
 1. Seleziona **Run** dal menu Java Projects
 
-### Da terminale:
+Da terminale:
 ```bash
 cd c:\Users\User\weather-app
 java -cp bin Main
 ```
+
+### Modalità Web (nuova)
+1. Compila l'intero progetto:
+```bash
+cd c:\Users\User\weather-app
+javac -d bin src/Main.java src/com/weatherapp/**/*.java
+```
+2. Esegui il server web:
+```bash
+java -cp bin com.weatherapp.web.WeatherWebServer
+```
+3. Apri il browser:
+`http://localhost:8080/index.html`
 
 ## 📋 Guida all'Uso
 

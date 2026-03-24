@@ -3,6 +3,8 @@ package com.weatherapp.service;
 import com.weatherapp.client.WeatherApiClient;
 import com.weatherapp.model.Location;
 import com.weatherapp.model.WeatherData;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Servizio di business logic per i dati meteorologici
@@ -10,17 +12,54 @@ import com.weatherapp.model.WeatherData;
  */
 public class WeatherService {
     private WeatherApiClient apiClient;
+    private Map<String, CachedData> weatherCache;
+    private static final long CACHE_DURATION_MS = 60 * 60 * 1000; // 1 ora in millisecondi
 
     public WeatherService() {
         this.apiClient = new WeatherApiClient();
+        this.weatherCache = new HashMap<>();
+    }
+
+    /**
+     * Classe per memorizzare i dati cached con timestamp
+     */
+    private static class CachedData {
+        private WeatherData data;
+        private long timestamp;
+
+        public CachedData(WeatherData data, long timestamp) {
+            this.data = data;
+            this.timestamp = timestamp;
+        }
+
+        public WeatherData getData() {
+            return data;
+        }
+
+        public boolean isExpired() {
+            return System.currentTimeMillis() - timestamp > CACHE_DURATION_MS;
+        }
     }
 
     /**
      * Recupera i dati meteorologici per una città
+     * Utilizza la cache per evitare chiamate API ripetute entro 1 ora
      * @param cityName Nome della città
      * @return Oggetto WeatherData con i dati attuali
      */
     public WeatherData getWeatherByCity(String cityName) {
+        if (cityName == null || cityName.isBlank()) {
+            System.err.println("Nome città non valido");
+            return null;
+        }
+
+        // Controlla la cache prima
+        CachedData cached = weatherCache.get(cityName);
+        if (cached != null && !cached.isExpired()) {
+            System.out.println("Utilizzo dati cached per: " + cityName);
+            return cached.getData();
+        }
+
         // 1. Recupera le coordinate geografiche
         Location location = apiClient.getLocationByCityName(cityName);
         
@@ -38,7 +77,15 @@ public class WeatherService {
         }
         
         // 3. Estrae i dati dal JSON e crea un oggetto WeatherData
-        return parseWeatherData(location, weatherJson);
+        WeatherData weatherData = parseWeatherData(location, weatherJson);
+        
+        // 4. Salva nella cache
+        if (weatherData != null) {
+            weatherCache.put(cityName, new CachedData(weatherData, System.currentTimeMillis()));
+            System.out.println("Dati salvati in cache per: " + cityName);
+        }
+        
+        return weatherData;
     }
 
     /**
@@ -47,11 +94,6 @@ public class WeatherService {
      */
     private WeatherData parseWeatherData(Location location, String json) {
         try {
-            // DEBUG: Mostra il JSON completo ricevuto
-            System.out.println("[DEBUG] JSON completo ricevuto:");
-            System.out.println(json);
-            System.out.println("[DEBUG] Fine JSON\n");
-
             // Estrai solo la sezione "current" dal JSON
             String currentSection = extractCurrentSection(json);
             if (currentSection == null) {
@@ -59,25 +101,12 @@ public class WeatherService {
                 return null;
             }
 
-            System.out.println("[DEBUG] Sezione current estratta:");
-            System.out.println(currentSection);
-            System.out.println("[DEBUG] Fine sezione current\n");
-
             double temperature = extractDouble(currentSection, "\"temperature_2m\":");
             double humidity = extractDouble(currentSection, "\"relative_humidity_2m\":");
             double windSpeed = extractDouble(currentSection, "\"wind_speed_10m\":");
             double precipitation = extractDouble(currentSection, "\"precipitation\":");
 
-            // DEBUG: Mostra i valori estratti
-            System.out.println("[DEBUG] Valori estratti:");
-            System.out.println("  Temperatura: " + temperature);
-            System.out.println("  Umidità: " + humidity);
-            System.out.println("  Vento: " + windSpeed);
-            System.out.println("  Precipitazioni: " + precipitation);
-
             String description = resolveWeatherCode(extractInt(currentSection, "\"weather_code\":"));
-            System.out.println("  Codice meteo: " + extractInt(currentSection, "\"weather_code\":") + " -> " + description);
-            System.out.println("[DEBUG] Fine valori estratti\n");
 
             return new WeatherData(location, temperature, humidity, windSpeed, description, precipitation);
         } catch (Exception e) {

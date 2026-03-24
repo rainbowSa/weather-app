@@ -41,7 +41,7 @@ public class ConsoleUI {
                     printGoodbye();
                     break;
                 default:
-                    System.out.println("❌ Scelta non valida. Riprova.");
+                    System.out.println("Scelta non valida. Riprova.");
             }
         }
         
@@ -52,21 +52,21 @@ public class ConsoleUI {
      * Permette all'utente di cercare il meteo di una città
      */
     private void searchWeather() {
-        System.out.println("\n🔍 Ricerca meteo");
+        System.out.println("\nRicerca meteo");
         System.out.print("Inserisci il nome della città: ");
         String cityName = scanner.nextLine().trim();
         
         if (cityName.isEmpty()) {
-            System.out.println("❌ Nome città non valido.");
+            System.out.println("Nome città non valido.");
             return;
         }
         
-        System.out.println("⏳ Caricamento dati...");
+        System.out.println("Caricamento dati...");
         
         WeatherData weather = weatherService.getWeatherByCity(cityName);
         
         if (weather == null) {
-            System.out.println("❌ Impossibile recuperare i dati meteorologici per: " + cityName);
+            System.out.println("Impossibile recuperare i dati meteorologici per: " + cityName);
             return;
         }
         
@@ -78,14 +78,14 @@ public class ConsoleUI {
      */
     private void displayWeather(WeatherData weather) {
         System.out.println("\n" + repeatString("=", 60));
-        System.out.println("🌍 DATI METEOROLOGICI - " + weather.getLocation().getName().toUpperCase());
+        System.out.println("DATI METEOROLOGICI - " + weather.getLocation().getName().toUpperCase());
         System.out.println(repeatString("=", 60));
-        System.out.println("📍 Località: " + weather.getLocation());
-        System.out.println("🌡️  Temperatura: " + String.format("%.1f", weather.getTemperature()) + "°C");
-        System.out.println("💧 Umidità: " + String.format("%.1f", weather.getHumidity()) + "%");
-        System.out.println("💨 Vento: " + String.format("%.1f", weather.getWindSpeed()) + " km/h");
-        System.out.println("🌤️  Condizione: " + weather.getWeatherDescription());
-        System.out.println("🌧️  Precipitazioni: " + String.format("%.1f", weather.getPrecipitation()) + " mm");
+        System.out.println("Località: " + weather.getLocation());
+        System.out.println("Temperatura: " + String.format("%.1f", weather.getTemperature()) + "°C");
+        System.out.println("Umidità: " + String.format("%.1f", weather.getHumidity()) + "%");
+        System.out.println("Vento: " + String.format("%.1f", weather.getWindSpeed()) + " km/h");
+        System.out.println("Condizione: " + weather.getWeatherDescription());
+        System.out.println("Precipitazioni: " + String.format("%.1f", weather.getPrecipitation()) + " mm");
         System.out.println(repeatString("=", 60) + "\n");
     }
 
@@ -93,7 +93,7 @@ public class ConsoleUI {
      * Visualizza il menu principale
      */
     private void printMenu() {
-        System.out.println("📋 MENU PRINCIPALE");
+        System.out.println("MENU PRINCIPALE");
         System.out.println("1. Cerca meteo per una città");
         System.out.println("2. Informazioni app");
         System.out.println("3. Esci");
@@ -116,7 +116,7 @@ public class ConsoleUI {
      */
     private void printWelcome() {
         System.out.println("\n" + repeatString("=", 60));
-        System.out.println("⛅ BENVENUTO IN WEATHER APP");
+        System.out.println("BENVENUTO IN WEATHER APP");
         System.out.println(repeatString("=", 60));
         System.out.println("Scopri il meteo di qualsiasi città nel mondo!");
         System.out.println("Dati forniti da Open-Meteo API");
