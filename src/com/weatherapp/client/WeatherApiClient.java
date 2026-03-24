@@ -51,7 +51,7 @@ public class WeatherApiClient {
                     "?latitude=" + location.getLatitude() + 
                     "&longitude=" + location.getLongitude() + 
                     "&current=" + ApiConfig.WEATHER_PARAMS + 
-                    "&timezone=auto";
+                    "&forecast_days=0";
             
             return makeHttpRequest(urlString);
         } catch (Exception e) {
